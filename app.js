@@ -1,6 +1,8 @@
 const express = require('express')
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
+const mongoose = require('mongoose')
+
 
 // APP INSTANCE WITH MIDDLEWARES
 const app = express()
@@ -9,6 +11,14 @@ const app = express()
 const productRoutes = require('./api/routes/products')
 // ORDERS CONTROLLER
 const orderRoutes = require('./api/routes/order')
+
+// MONGO DB CONNECTION
+mongoose.connect(
+    `mongodb+srv://admin-user:${process.env.MONGO_ATLAS_PWD}@cluster0.vekv6.mongodb.net?retryWrites=true&w=majority`,
+    {useNewUrlParser: true, useUnifiedTopology: true}
+)
+    .then(_ => '>>> MONGO CONNECTED')
+    .catch(_ => console.error('>>> MONGO CONNECTION FAILED'))
 
 /**
  * EXTRA MIDDLEWARES SET UP
