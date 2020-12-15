@@ -12,7 +12,11 @@ router.get('/', ((req, res, next) => {
 
 // ADD ORDER
 router.post('/', ((req, res, next) => {
+    const {productId, quantity} = req.body || {}
+    // CREATED ORDER
+    const order = {productId, quantity}
     res.status(201).json({
+        body: order,
         message: 'Order was created'
     })
 }))

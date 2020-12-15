@@ -10,10 +10,14 @@ router.get('/', (req, res, next)=> {
     })
 })
 
-// ADD ALL PRODUCTS
+// ADD PRODUCT
 router.post('/', (req, res, next)=> {
+    const {name, price} = req.body || {}
+    // CREATED PRODUCT
+    const product = {name, price}
     res.status(201).json({
-        message: 'Handling POST requests to /products'
+        body: product,
+        message: 'Product CREATED!',
     })
 })
 
