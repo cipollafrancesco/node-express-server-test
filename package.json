@@ -4,7 +4,7 @@
   "description": "Node.js Tutorial",
   "main": "index.js",
   "scripts": {
-    "run": "node server.js",
+    "run": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -13,6 +13,8 @@
   "author": "Francesco Cipolla",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.6"
   }
 }
