@@ -11,6 +11,8 @@ const app = express()
 const productRoutes = require('./api/routes/products')
 // ORDERS CONTROLLER
 const orderRoutes = require('./api/routes/orders')
+// USERS CONTROLLER
+const userRoutes = require('./api/routes/users')
 
 // MONGO DB CONNECTION
 mongoose.connect(
@@ -58,6 +60,7 @@ app.use((req, res, next) => {
 // ROUTES CONFIGURATION
 app.use('/products', productRoutes)
 app.use('/orders', orderRoutes)
+app.use('/users', userRoutes)
 
 // REQUESTS THAT DON'T MATCH GO TO ERROR HANDLER
 app.use(((req, res, next) => {
