@@ -30,6 +30,9 @@ mongoose.Promise = Promise
 // REQUEST LOGGER
 app.use(morgan('dev'))
 
+// MAKE FOLDER PUBLIC AVAILABLE (example: http://localhost:8080/2020-12-16T20:28:04.250Zdownload.jpeg)
+app.use('/uploads', express.static('uploads'))
+
 // REQ BODY PARSER ENHANCER (extended is for complex body bjs )
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())

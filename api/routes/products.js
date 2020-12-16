@@ -1,5 +1,31 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const multer = require('multer')
+
+// MULTER HANDLES BODY FORMAT THAT BODY-PARSER DOES NOT SUPPORT
+const storage = multer.diskStorage({
+    destination: (req, file, callback) => {
+        // error, path
+        callback(null, './uploads/')
+    },
+    filename: (req, file, callback) => {
+        // error, path
+        callback(null, new Date().toISOString() + file.originalname)
+    },
+})
+
+const fileFilter = (req, file, callback) => {
+    // LIMITS FILE TYPES UPLOAD
+    file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' ?
+        callback(null, true) :
+        callback(new Error('File mimetype not supported'), false)
+}
+
+const upload = multer({
+    storage: storage,
+    limits: {fileSize: 1024 * 1024},
+    fileFilter,
+})
 
 // CONTROLLER
 const router = express.Router()
@@ -12,10 +38,8 @@ router.get('/', async (req, res, next) => {
         const products = await Product.find()
         const responseBody = {
             count: Array.isArray(products) ? products.length : 0,
-            products: products.map(({name, price, _id}) => ({
-                name,
-                price,
-                _id,
+            products: products.map(({name, price, productImage, _id}) => ({
+                name, price, _id, productImage,
                 request: {method: 'GET', url: `http://localhost:${process.env.PORT}/products/${_id}`}
             }))
         }
@@ -27,32 +51,38 @@ router.get('/', async (req, res, next) => {
     }
 })
 
-// ADD PRODUCT
-router.post('/', async (req, res, next) => {
-    const {name, price} = req.body || {}
+// ADD PRODUCT with image UPLOAD
+router.post(
+    '/',
+    upload.single('productImage'),
+    async (req, res, next) => {
+        const {name, price} = req.body || {}
 
-    // CREATING PRODUCT
-    const product = new Product({
-        _id: mongoose.Types.ObjectId(),
-        name,
-        price,
-    })
+        console.log('>>> FILE', req.file)
 
-    try {
-        // SAVING ON MONGO
-        const createdProduct = await product.save()
-        console.log('>>> CREATED PRODUCT', createdProduct)
-        const responseBody = {
-            product,
-            request: {method: 'GET', url: `http://localhost:${process.env.PORT}/products/${product._id}`}
+        // CREATING PRODUCT
+        const product = new Product({
+            _id: mongoose.Types.ObjectId(),
+            name,
+            price,
+            productImage: req.file.path, // UPLOADED IMG
+        })
+
+        try {
+            // SAVING ON MONGO
+            const createdProduct = await product.save()
+            console.log('>>> CREATED PRODUCT', createdProduct)
+            const responseBody = {
+                product,
+                request: {method: 'GET', url: `http://localhost:${process.env.PORT}/products/${product._id}`}
+            }
+            res.status(200).json({body: responseBody, message: 'Product created successfully!'})
+        } catch (e) {
+            // IN CASE OF ERROR IN SAVE
+            res.status(500).json({body: null, message: 'Ops! An Error occurred while creating product'})
         }
-        res.status(201).json({body: responseBody, message: 'Product created successfully!'})
-    } catch (e) {
-        // IN CASE OF ERROR IN SAVE
-        res.status(500).json({body: null, message: 'Ops! An Error occurred while creating product'})
-    }
 
-})
+    })
 
 const PRODUCT_ID_PV = 'productId'
 
