@@ -9,9 +9,20 @@ const Product = require('../../models/product')
 // GET ALL PRODUCTS
 router.get('/', async (req, res, next) => {
     try {
-        const product = await Product.find()
-        res.status(200).json({body: product, message: 'Products retrieved successfully'})
+        const products = await Product.find()
+        const responseBody = {
+            count: Array.isArray(products) ? products.length : 0,
+            products: products.map(({name, price, _id}) => ({
+                name,
+                price,
+                _id,
+                request: {method: 'GET', url: `http://localhost:${process.env.PORT}/products/${_id}`}
+            }))
+        }
+
+        res.status(200).json({body: responseBody, message: 'Products retrieved successfully'})
     } catch (e) {
+        console.error('>>> GET PRODUCTS', e)
         res.status(500).json({body: null, message: `Ops! An error occurred while getting products`})
     }
 })
@@ -31,7 +42,11 @@ router.post('/', async (req, res, next) => {
         // SAVING ON MONGO
         const createdProduct = await product.save()
         console.log('>>> CREATED PRODUCT', createdProduct)
-        res.status(201).json({body: product, message: 'Product created successfully!'})
+        const responseBody = {
+            product,
+            request: {method: 'GET', url: `http://localhost:${process.env.PORT}/products/${product._id}`}
+        }
+        res.status(201).json({body: responseBody, message: 'Product created successfully!'})
     } catch (e) {
         // IN CASE OF ERROR IN SAVE
         res.status(500).json({body: null, message: 'Ops! An Error occurred while creating product'})

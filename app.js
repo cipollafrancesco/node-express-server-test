@@ -18,7 +18,10 @@ mongoose.connect(
     {useNewUrlParser: true, useUnifiedTopology: true}
 )
     .then(_ => '>>> MONGO CONNECTED')
-    .catch(_ => console.error('>>> MONGO CONNECTION FAILED'))
+    .catch(err => console.error('>>> MONGO CONNECTION FAILED', err))
+
+// USE DEFAULT NODE PROMISE INSTEAD OF MONGOOSE ONE
+mongoose.Promise = Promise
 
 /**
  * EXTRA MIDDLEWARES SET UP
