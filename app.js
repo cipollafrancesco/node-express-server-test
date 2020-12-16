@@ -10,7 +10,7 @@ const app = express()
 // PRODUCTS CONTROLLER
 const productRoutes = require('./api/routes/products')
 // ORDERS CONTROLLER
-const orderRoutes = require('./api/routes/order')
+const orderRoutes = require('./api/routes/orders')
 
 // MONGO DB CONNECTION
 mongoose.connect(
