@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
-const {PRODUCT_ID_PV} = require('../routes/routes.constants')
+const {PRODUCT_ID_PV} = require('../api.constants')
 
 // MONGO DB MODEL
-const Product = require('../../models/product')
+const Product = require('./product.model')
 const {createResponse} = require('../utils')
 
 exports.products_get_all = async (req, res, next) => {

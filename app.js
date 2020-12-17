@@ -8,11 +8,11 @@ const mongoose = require('mongoose')
 const app = express()
 
 // PRODUCTS CONTROLLER
-const productRoutes = require('./api/routes/products.routes')
+const productRoutes = require('./api/products/products.routes')
 // ORDERS CONTROLLER
-const orderRoutes = require('./api/routes/orders.routes')
+const orderRoutes = require('./api/orders/orders.routes')
 // USERS CONTROLLER
-const userRoutes = require('./api/routes/users.routes')
+const userRoutes = require('./api/users/users.routes')
 
 // MONGO DB CONNECTION
 mongoose.connect(

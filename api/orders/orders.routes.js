@@ -1,13 +1,13 @@
 const express = require('express')
-const {ORDER_ID_PV} = require('./routes.constants')
+const {ORDER_ID_PV} = require('../api.constants')
 
 // AUTH CHECK HANDLER
-const authCheck = require('../middleware/check-auth')
+const authCheck = require('../middlewares/check-auth')
 
 // CONTROLLER ENHANCER
 const router = express.Router()
 
-const OrderController = require('../controllers/orders')
+const OrderController = require('./orders.controller')
 
 // GET ORDERS
 router.get('/', authCheck, OrderController.orders_get_all)

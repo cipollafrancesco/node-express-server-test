@@ -1,13 +1,13 @@
 const express = require('express')
-const {upload} = require('./upload.configs')
-const {PRODUCT_ID_PV} = require('./routes.constants')
+const {upload} = require('../middlewares/upload.configs')
+const {PRODUCT_ID_PV} = require('../api.constants')
 
 // AUTH CHECK HANDLER
-const authCheck = require('../middleware/check-auth')
+const authCheck = require('../middlewares/check-auth')
 
 // CONTROLLER
 const router = express.Router()
-const ProductController = require('../controllers/products')
+const ProductController = require('./products.controller')
 
 // GET ALL PRODUCTS
 router.get('/', authCheck, ProductController.products_get_all)

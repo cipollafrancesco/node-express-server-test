@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 // MONGO MODEL
-const User = require('../../models/user')
+const User = require('./user.model')
 const {createResponse} = require('../utils')
 
 // GET USERS LIST

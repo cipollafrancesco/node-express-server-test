@@ -1,13 +1,13 @@
 const mongoose = require('mongoose')
-const {ORDER_ID_PV} = require('../routes/routes.constants')
+const {ORDER_ID_PV} = require('../api.constants')
 
 // MONGO MODEL
-const Order = require('../../models/order')
-const Product = require('../../models/product')
+const Order = require('./order.model')
+const Product = require('../products/product.model')
 const {createResponse} = require('../utils')
 
 // GET ALL ORDERS
-exports.orders_get_all = async (req, res, next) => {
+exports.orders_get_all = async (req, res) => {
     try {
         const orders = await Order
             .find()
@@ -34,7 +34,7 @@ exports.orders_get_all = async (req, res, next) => {
 }
 
 // ADD ORDER
-exports.orders_create_order = async (req, res, next) => {
+exports.orders_create_order = async (req, res) => {
 
     const {productId, quantity} = req.body || {}
 
@@ -62,7 +62,7 @@ exports.orders_create_order = async (req, res, next) => {
 }
 
 // GET ORDER BY ID
-exports.orders_get_order_by_id = async (req, res, next) => {
+exports.orders_get_order_by_id = async (req, res) => {
     const orderId = req.params[ORDER_ID_PV]
     try {
         const order = await Order.findById(orderId).exec()
@@ -76,7 +76,7 @@ exports.orders_get_order_by_id = async (req, res, next) => {
 }
 
 // DELETE ORDER BY ID
-exports.orders_delete_order_by_id = async (req, res, next) => {
+exports.orders_delete_order_by_id = async (req, res) => {
     const orderId = req.params[ORDER_ID_PV]
     try {
         const order = await Order.findByIdAndDelete(orderId).exec()
