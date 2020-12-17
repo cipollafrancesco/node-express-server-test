@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 // CONTROLLER
 const router = express.Router()
@@ -52,11 +53,15 @@ router.post('/signup', (async (req, res, next) => {
             })
 
             // SAVING USER ON MONGO
-            const createdUser = await user.save()
+            try {
+                const createdUser = await user.save()
+                return createdUser ?
+                    res.status(201).json({body: createdUser, message: 'User has been created'}) :
+                    res.status(500).json({body: null, message: 'Ops! Something went wrong'})
 
-            createdUser ?
-                res.status(201).json({body: createdUser, message: 'User has been created'}) :
-                res.status(500).json({body: null, message: 'Ops! Something went wrong'})
+            } catch (e) {
+                res.status(400).json({body: null, message: e.message})
+            }
         }
 
     } catch (e) {
@@ -66,25 +71,45 @@ router.post('/signup', (async (req, res, next) => {
 }))
 
 // USER LOGIN
-router.get('/login', (async (req, res, next) => {
+router.post('/login', (async (req, res, next) => {
+
+    // USERNAME TO CHECK
+    const {username, password} = req.body
+
     try {
-        const orders = await User
-            .find()
-            .select('product quantity _id')
-            .populate('product', 'name price') // AUTO JOIN THE REF PROPERTY and RETURNS ONLY 'name price'
+        const targetUser = await User
+            .findOne({username})
             .exec()
-        orders ? res.status(200).json({
-                body: {
-                    orders: orders.map(({_id, quantity, product}) => ({
-                        _id, quantity, product,
-                        request: {method: 'GET', url: `http://localhost:${process.env.PORT}/orders/${_id}`}
-                    })), count: orders.length
-                }, message: 'Users have been fetched'
-            }) :
-            res.status(500).json({body: null, message: 'Ops! Something wrong happened'})
-    } catch (e) {
-        console.error('>>> ERROR IN ORDERS GET', e)
-        res.status(500).json({body: null, message: 'Ops! Something wrong happened'})
+            .catch(error => res.status(500).json({body: null, message: error.message}))
+
+        if (!targetUser) {
+            return res.status(401).json({body: null, message: 'Ops! Auth failed'})
+        }
+
+        // COMPARING PASSWORDS
+        bcrypt.compare(password, targetUser.password, (error, result) => {
+                if (error || !result) {
+                    return res.status(401).json({body: null, message: 'Ops! Auth failed'})
+                }
+
+                // ENCODED TOKEN (decode @ https://jwt.io/)
+                const token = jwt.sign(
+                    // INfO TO INCLUDE IN THE TOKEN
+                    {username: targetUser.username, id: targetUser._id},
+                    process.env.JWT_KEY,
+                    {expiresIn: '1h'},
+                )
+
+                return res.status(200).json({
+                    body: {username, _id: targetUser._id},
+                    token,
+                    message: 'Successfully logged in!'
+                })
+            }
+        )
+
+    } catch (error) {
+        return res.status(500).json({body: null, message: 'Ops! Something went wrong'})
     }
 }))
 

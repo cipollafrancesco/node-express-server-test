@@ -5,7 +5,8 @@ const mongoose = require('mongoose')
  */
 const userSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    username: {type: mongoose.Schema.Types.String, required: true},
+    // unique makes possible some performances optimizations due to uniqueness
+    username: {type: mongoose.Schema.Types.String, required: true, unique: true, match: /^[a-zA-Z0-9]+$/},
     password: {type: mongoose.Schema.Types.String, required: true},
 })
 
